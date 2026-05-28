@@ -1,31 +1,28 @@
 from fastapi import FastAPI, UploadFile, File
 from ultralytics import YOLO
-import easyocr
+from paddleocr import PaddleOCR
 import numpy as np
 import cv2
 from database import save_plate
-from datetime import datetime
 import re
 
 app = FastAPI()
 
 yolo_model = YOLO("runs/detect/placas_combinado2/weights/best.pt")
-reader = easyocr.Reader(["es"], gpu=False)
+ocr = PaddleOCR() 
 
 print("Modelos cargados. Servidor listo.")
 
 
 def corregir_placa(text: str) -> str:
-    """Corrige confusiones comunes de OCR en placas colombianas."""
-    text = text.upper().replace(" ", "").replace("-", "").replace(".", "")
+    # Limpia todo excepto letras y números
+    text = re.sub(r'[^A-Z0-9]', '', text.upper())
 
     if len(text) < 5:
         return text
 
-    # Tomar solo los primeros 6 caracteres
     text = text[:6]
 
-    # Las primeras 3 son letras — reemplazar números por letras similares
     letras = text[:3]
     letras = letras.replace("0", "O")
     letras = letras.replace("1", "I")
@@ -33,7 +30,6 @@ def corregir_placa(text: str) -> str:
     letras = letras.replace("6", "G")
     letras = letras.replace("8", "B")
 
-    # Los últimos 3 son números — reemplazar letras por números similares
     numeros = text[3:]
     numeros = numeros.replace("O", "0")
     numeros = numeros.replace("I", "1")
@@ -58,8 +54,6 @@ async def detectar(file: UploadFile = File(...)):
     if frame is None:
         return {"error": "Imagen inválida"}
 
-    frame = cv2.resize(frame, (640, 480))
-
     results = yolo_model(frame, conf=0.05, verbose=False)
     print(f"YOLO detectó {sum(len(r.boxes) for r in results)} objetos")
     placas_detectadas = []
@@ -69,7 +63,6 @@ async def detectar(file: UploadFile = File(...)):
             x1, y1, x2, y2 = map(int, box.xyxy[0])
             conf = float(box.conf[0])
 
-            # Margen para no cortar la placa
             h, w = frame.shape[:2]
             x1 = max(0, x1 - 10)
             y1 = max(0, y1 - 10)
@@ -83,22 +76,24 @@ async def detectar(file: UploadFile = File(...)):
             cv2.imwrite("debug_crop.jpg", crop)
             print(f"Recorte: {x1},{y1},{x2},{y2}")
 
-            # Escalar x3 para mejor lectura
-            crop_big = cv2.resize(crop, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
+            # Escalar x4
+            crop_big = cv2.resize(crop, None, fx=2, fy=2, interpolation=cv2.INTER_LANCZOS4)
+            cv2.imwrite("debug_processed.jpg", crop_big)
 
+            ocr_res = ocr.ocr(crop_big)
+            if not ocr_res or not ocr_res[0]:
+                print("OCR sin resultados")
+                continue
 
-            ocr_res = reader.readtext(
-                crop_big,
-                allowlist="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
-                rotation_info=[90, 180, 270]  # prueba múltiples rotaciones
-            )
+            for line in ocr_res[0]:
+                text_raw = line[1][0]
+                prob = line[1][1]
+                print(f"OCR raw: '{text_raw}' prob:{prob:.2f}")
 
-            for (_, text, prob) in ocr_res:
-                print(f"OCR raw: '{text}' prob:{prob:.2f}")
-                text = corregir_placa(text)
+                text = corregir_placa(text_raw)
                 print(f"OCR corregido: '{text}'")
 
-                if prob > 0.2 and re.match(r'^[A-Z]{3}\d{3}$', text):
+                if prob > 0.3 and re.match(r'^[A-Z]{3}\d{3}$', text):
                     is_new = save_plate(text, frame)
                     placas_detectadas.append({
                         "placa": text,
