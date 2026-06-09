@@ -75,9 +75,7 @@ create table cameras (
 
 ```bash
 cd backend
-pip install -r requirements_clean.txt
-uvicorn api:app --reload --port 8000
-```
+pip install -r requirements_clean.txt```
 
 ## Levantar el frontend
 

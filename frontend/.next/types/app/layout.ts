@@ -1,4 +1,4 @@
-// File: /home/jhonardearco/Descargas/PlacaControl-v2/frontend/src/app/layout.tsx
+// File: C:\Users\al\Documents\Programacion Avanzada\Sistema-Inteligente-de-Reconocimiento-de-Placas\frontend\src\app\layout.tsx
 import * as entry from '../../../src/app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
