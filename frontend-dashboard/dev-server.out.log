@@ -1,0 +1,7 @@
+
+> rest-express@1.0.0 dev
+> cross-env NODE_ENV=development tsx server/index.ts
+
+7:03:17 PM [express] serving on port 5000
+7:03:40 PM [express] POST /auth/login 400 in 3ms :: {"detail":"Usuario y contraseña requeridos"}
+7:03:54 PM [express] POST /auth/login 401 in 1566ms :: {"detail":"Usuario o contraseña incorrectos"}
