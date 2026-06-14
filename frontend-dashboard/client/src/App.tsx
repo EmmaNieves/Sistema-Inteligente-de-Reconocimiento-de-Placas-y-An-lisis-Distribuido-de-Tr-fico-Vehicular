@@ -6,15 +6,18 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
+
 import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
+import Estadisticas from "@/pages/Estadisticas";
 import Detecciones from "@/pages/Detecciones";
 import Alertas from "@/pages/Alertas";
 import Vehiculos from "@/pages/Vehiculos";
 import Camaras from "@/pages/Camaras";
-import Simulador from "@/pages/Simulador";
 import Usuarios from "@/pages/Usuarios";
 import NotFound from "@/pages/not-found";
+import Audiencias from "@/pages/Audiencias";
+import Mapa from "@/pages/Mapa";
 
 function Router() {
   return (
@@ -22,6 +25,12 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/dashboard">
         <ProtectedRoute><Dashboard /></ProtectedRoute>
+      </Route>
+      <Route path="/estadisticas">
+        <ProtectedRoute><Estadisticas /></ProtectedRoute>
+      </Route>
+      <Route path="/audiencias">
+        <ProtectedRoute><Audiencias /></ProtectedRoute>
       </Route>
       <Route path="/detecciones">
         <ProtectedRoute><Detecciones /></ProtectedRoute>
@@ -35,8 +44,8 @@ function Router() {
       <Route path="/camaras">
         <ProtectedRoute><Camaras /></ProtectedRoute>
       </Route>
-      <Route path="/simulador">
-        <ProtectedRoute><Simulador /></ProtectedRoute>
+      <Route path="/mapa">
+        <ProtectedRoute><Mapa /></ProtectedRoute>
       </Route>
       <Route path="/usuarios">
         <ProtectedRoute adminOnly><Usuarios /></ProtectedRoute>

@@ -3,10 +3,11 @@ import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import {
   LayoutDashboard, Camera, Car, AlertTriangle, FileSearch,
-  Users, PlayCircle, Menu, X, LogOut, ChevronRight, Shield
+  Users, Map, Menu, X, LogOut, ChevronRight, Shield, BarChart3, UsersRound
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+
 
 interface NavItem {
   label: string;
@@ -17,11 +18,13 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: <LayoutDashboard size={18} /> },
+  { label: "Estadísticas", href: "/estadisticas", icon: <BarChart3 size={18} /> }, // <-- ¡Este es tu nuevo botón!
   { label: "Detecciones", href: "/detecciones", icon: <FileSearch size={18} /> },
   { label: "Alertas", href: "/alertas", icon: <AlertTriangle size={18} /> },
   { label: "Vehículos", href: "/vehiculos", icon: <Car size={18} /> },
   { label: "Cámaras", href: "/camaras", icon: <Camera size={18} /> },
-  { label: "Simulador", href: "/simulador", icon: <PlayCircle size={18} /> },
+  { label: "Mapa", href: "/mapa", icon: <Map size={18} /> },
+  { label: "Audiencias", href: "/audiencias", icon: <UsersRound size={18} /> },
   { label: "Usuarios", href: "/usuarios", icon: <Users size={18} />, adminOnly: true },
 ];
 

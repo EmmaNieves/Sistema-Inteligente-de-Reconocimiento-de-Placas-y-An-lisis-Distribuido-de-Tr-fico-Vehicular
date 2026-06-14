@@ -15,7 +15,8 @@ import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
-const emptyForm: CameraCreate = { camera_code: "", name: "", location: "", status: "activo", active: true };
+
+const emptyForm: CameraCreate = {camera_code: "", name: "", location: "",status: "activo", active: true,latitud: null, longitud: null,  };
 
 export default function Camaras() {
   const { toast } = useToast();
@@ -50,7 +51,12 @@ export default function Camaras() {
   const openCreate = () => { setEditing(null); setForm(emptyForm); setDialogOpen(true); };
   const openEdit = (c: Camera) => {
     setEditing(c);
-    setForm({ camera_code: c.camera_code, name: c.name, location: c.location, status: c.status, active: c.active });
+    setForm({
+      camera_code: c.camera_code, name: c.name,
+      location: c.location, status: c.status, active: c.active,
+      latitud: c.latitud,    // 👈
+      longitud: c.longitud,  // 👈
+    });
     setDialogOpen(true);
   };
   const closeDialog = () => { setDialogOpen(false); setEditing(null); setForm(emptyForm); };
@@ -184,6 +190,43 @@ export default function Camaras() {
                 </SelectContent>
               </Select>
             </div>
+            {/* 👇 NUEVO - coordenadas */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="c-lat">Latitud</Label>
+                <Input
+                  id="c-lat"
+                  type="number"
+                  step="any"
+                  data-testid="input-camera-lat"
+                  value={form.latitud ?? ""}
+                  onChange={(e) => setForm(f => ({
+                    ...f,
+                    latitud: e.target.value === "" ? null : parseFloat(e.target.value)
+                  }))}
+                  placeholder="11.5444"
+                  className="rounded-xl font-mono"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="c-lng">Longitud</Label>
+                <Input
+                  id="c-lng"
+                  type="number"
+                  step="any"
+                  data-testid="input-camera-lng"
+                  value={form.longitud ?? ""}
+                  onChange={(e) => setForm(f => ({
+                    ...f,
+                    longitud: e.target.value === "" ? null : parseFloat(e.target.value)
+                  }))}
+                  placeholder="-72.9072"
+                  className="rounded-xl font-mono"
+                />
+              </div>
+            </div>
+            {/* 👆 FIN NUEVO */}
+
             <div className="flex items-center justify-between">
               <Label>Activa</Label>
               <Switch

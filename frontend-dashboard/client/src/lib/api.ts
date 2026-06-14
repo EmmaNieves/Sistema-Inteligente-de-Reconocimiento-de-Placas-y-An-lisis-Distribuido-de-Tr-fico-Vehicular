@@ -12,6 +12,8 @@ export function removeToken(): void {
   localStorage.removeItem("lpr_token");
 }
 
+
+
 async function request<T>(
   path: string,
   options: RequestInit = {}
@@ -48,6 +50,12 @@ export const api = {
   dashboardStats: () => request<DashboardStats>("/dashboard/stats"),
   recentDetections: () => request<Plate[]>("/dashboard/recent-detections"),
   recentAlerts: () => request<Alerta[]>("/dashboard/recent-alerts"),
+
+  // Estadisticas
+  estadisticas: () => request<EstadisticasStats>("/api/estadisticas"),
+
+  // Audiencias
+  audiencias: () => request<AudienciasData>("/api/audiencias"),
 
   // Detecciones (plates)
   getDetections: (params?: DetectionFilters) => {
@@ -120,6 +128,8 @@ export interface Camera {
   active: boolean;
   last_connection: string | null;
   created_at: string;
+  latitud: number | null;   // 
+  longitud: number | null;  //
 }
 
 export interface Vehicle {
@@ -179,6 +189,43 @@ export interface DashboardStats {
   active_cameras: number;
 }
 
+export interface EstadisticasStats {
+  processingData: Array<{ time: string; value: number }>;
+  trafficData: Array<{ hour: string; vehicles: number }>;
+  categoryData: Array<{ name: string; auth: number; denied: number }>;
+  heatmapData: number[][];
+  activeCameras: number;
+  inactiveCameras: number;
+  criticalAlerts: number;
+  averageConfidence: number;
+  totalAuthorized: number;
+  totalDenied: number;
+  totalDetections: number;
+}
+
+export type AudienciaBadge = "Residente" | "Visitante" | "Tránsito";
+
+export interface PlacaAudiencia {
+  plate_text: string;
+  count: number;
+  badge: AudienciaBadge;
+  vehicle_type: string;
+  authorized: boolean;
+  peak_hour: string;
+  top_camera_id: string;
+  first_seen: string;
+  last_seen: string;
+}
+
+export interface AudienciasData {
+  total_placas: number;
+  residentes: number;
+  visitantes: number;
+  transito: number;
+  recurrence_rate: number;
+  placas: PlacaAudiencia[];
+}
+
 export interface DetectionFilters {
   plate?: string;
   authorized?: boolean;
@@ -200,8 +247,9 @@ export interface CameraCreate {
   location: string;
   status: "activo" | "inactivo";
   active: boolean;
+  latitud?: number | null;   // 
+  longitud?: number | null;  // 
 }
-
 export interface UserCreate {
   username: string;
   email: string;

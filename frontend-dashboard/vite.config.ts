@@ -36,6 +36,7 @@ export default defineConfig({
       strict: true,
     },
     proxy: {
+      "/api": "http://localhost:5000",
       "/auth": "http://localhost:5000",
       "/dashboard": "http://localhost:5000",
       "/detections": "http://localhost:5000",
