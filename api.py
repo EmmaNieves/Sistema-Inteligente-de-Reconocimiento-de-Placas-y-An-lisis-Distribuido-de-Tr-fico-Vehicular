@@ -1,3 +1,8 @@
+from dotenv import load_dotenv
+import os
+load_dotenv()
+PLATE_RECOGNIZER_KEY = os.getenv("PLATE_RECOGNIZER_KEY")
+print("KEY CARGADA:", PLATE_RECOGNIZER_KEY)
 from fastapi import FastAPI, UploadFile, File
 import numpy as np
 import cv2
